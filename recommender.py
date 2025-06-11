@@ -16,6 +16,10 @@ df['description'] = df['description'].fillna('')
 df['listed_in'] = df['listed_in'].fillna('')
 df['text'] = df['description'] + ' ' + df['listed_in']
 
+# Add after loading df
+df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
+df['release_year'] = df['date_added'].dt.year
+
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df['text'])
 
