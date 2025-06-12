@@ -258,10 +258,9 @@ import streamlit as st
 from recommender import recommend, fetch_poster
 
 st.set_page_config(page_title="Netflix Recommender", layout="wide")
-
+st.markdown("<h1 style='color:red;'>🍿 Netflix Recommendation Engine</h1>", unsafe_allow_html=True)
 # Header and CSS for responsive tile layout
 st.markdown("""
-    <h1 style='color:red;'>🍿 Netflix Recommendation Engine</h1>
     <style>
     .tile-container {
         display: flex;
