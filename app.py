@@ -1,3 +1,9 @@
+import streamlit as st
+from recommender import recommend, fetch_poster
+
+st.set_page_config(page_title="Netflix Recommender", layout="wide")
+
+
 '''import streamlit as st
 from recommender import recommend, fetch_poster
 import math
@@ -254,10 +260,7 @@ if movie_input:
 
 # Ver 1.4
 
-import streamlit as st
-from recommender import recommend, fetch_poster
 
-st.set_page_config(page_title="Netflix Recommender", layout="wide")
 st.markdown("<h1 style='color:red;'>🍿 Netflix Recommendation Engine</h1>", unsafe_allow_html=True)
 # Header and CSS for responsive tile layout
 st.markdown("""
