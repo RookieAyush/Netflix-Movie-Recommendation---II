@@ -1,3 +1,6 @@
+
+# Ver 1.0
+'''
 import pandas as pd
 import numpy as np
 from sentence_transformers import SentenceTransformer
@@ -43,6 +46,45 @@ def fetch_poster(title):
     response = requests.get(url)
     data = response.json()
 
+    if data.get('Response') == 'True' and data.get("Poster") != "N/A":
+        return data.get('Poster')
+    else:
+        return "https://via.placeholder.com/160x240.png?text=No+Image"
+'''
+
+
+# Ver 1.1
+
+import pandas as pd
+from sentence_transformers import SentenceTransformer, util
+import numpy as np
+import requests
+
+# Load data
+df = pd.read_csv('netflix_titles.csv')
+df = df.dropna(subset=['description', 'listed_in', 'title', 'release_year'])
+
+# Combine description and genres
+df['combined'] = df['description'] + " " + df['listed_in']
+
+# Load BERT model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+df['embedding'] = df['combined'].apply(lambda x: model.encode(x, convert_to_tensor=True))
+
+def recommend(user_input, top_n=12):
+    query_embedding = model.encode(user_input, convert_to_tensor=True)
+    similarities = df['embedding'].apply(lambda x: float(util.pytorch_cos_sim(x, query_embedding)))
+    top_indices = similarities.sort_values(ascending=False).head(top_n).index
+    return df.loc[top_indices][['title', 'listed_in', 'description', 'release_year']].reset_index(drop=True)
+
+# Poster fetch
+OMDB_API_KEY = "8df3a7d2"
+
+def fetch_poster(title):
+    title = title.split(":")[0].strip().replace("&", "and")
+    url = f"http://www.omdbapi.com/?t={title}&apikey={OMDB_API_KEY}"
+    response = requests.get(url)
+    data = response.json()
     if data.get('Response') == 'True' and data.get("Poster") != "N/A":
         return data.get('Poster')
     else:
