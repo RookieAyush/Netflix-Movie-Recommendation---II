@@ -134,18 +134,20 @@ css = """
 # Build the inner HTML in one go (important)
 items_html = ""
 for _, row in results.iterrows():
-    poster_url = fetch_poster(row['title'])  # your existing function
+    poster_url = fetch_poster(str(row['title']))  # ensure string
+    description = str(row['description']) if not pd.isna(row['description']) else ""
     items_html += f"""
     <div class="movie-tile">
-      <img src="{poster_url}" alt="{row['title']} poster">
+      <img src="{poster_url}" alt="{str(row['title'])} poster">
       <div class="movie-info">
-        <strong>{row['title']}</strong><br>
-        <b>Year:</b> {row['release_year']}<br>
-        <b>Genre:</b> {row['listed_in']}<br>
-        <p>{row['description'][:200]}...</p>
+        <strong>{str(row['title'])}</strong><br>
+        <b>Year:</b> {str(row['release_year'])}<br>
+        <b>Genre:</b> {str(row['listed_in'])}<br>
+        <p>{description[:200]}...</p>
       </div>
     </div>
     """
+
 
 html = css + "<div class='tile-container'>" + items_html + "</div>"
 
