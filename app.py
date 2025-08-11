@@ -4,17 +4,18 @@ from recommender import recommend, fetch_poster
 st.set_page_config(page_title="Netflix Recommender", layout="wide")
 st.markdown("<h1 style='color:red;'>🍿 Netflix Recommendation Engine</h1>", unsafe_allow_html=True)
 # Header and CSS for responsive tile layout
+'''
 st.markdown("""
     <style>
     .tile-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 15px;
-        justify-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
     }
     .movie-tile {
         position: relative;
-        width: 100%;
+        width: 22%;
+        margin: 10px;
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -71,3 +72,87 @@ if movie_input:
             
     except Exception as e:
         st.error(f"Something went wrong: {e}")
+'''
+
+
+import math
+import streamlit.components.v1 as components
+
+# CSS (strong selectors + responsive)
+css = """
+<style>
+.tile-container{
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+.movie-tile{
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+.movie-tile img{
+  display: block;
+  width: 100%;
+  height: 260px;               /* fixed height so tiles align */
+  object-fit: cover;
+}
+.movie-info{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 10px;
+  transform: translateY(100%);
+  transition: transform 0.25s ease-in-out;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+.movie-tile:hover .movie-info{
+  transform: translateY(0);
+}
+
+/* responsive fallbacks */
+@media (max-width: 1000px){
+  .tile-container{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+@media (max-width: 700px){
+  .tile-container{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 420px){
+  .tile-container{ grid-template-columns: 1fr; }
+}
+</style>
+"""
+
+# Build the inner HTML in one go (important)
+items_html = ""
+for _, row in results.iterrows():
+    poster_url = fetch_poster(row['title'])  # your existing function
+    items_html += f"""
+    <div class="movie-tile">
+      <img src="{poster_url}" alt="{row['title']} poster">
+      <div class="movie-info">
+        <strong>{row['title']}</strong><br>
+        <b>Year:</b> {row['release_year']}<br>
+        <b>Genre:</b> {row['listed_in']}<br>
+        <p>{row['description'][:200]}...</p>
+      </div>
+    </div>
+    """
+
+html = css + "<div class='tile-container'>" + items_html + "</div>"
+
+# Option A: single st.markdown injection
+st.markdown(html, unsafe_allow_html=True)
+
+# Option B: more reliable — render inside a component iframe and set height
+# rows = math.ceil(len(results)/4)
+# height = rows * 320 + 50
+# components.html(html, height=height, scrolling=True)
