@@ -7,14 +7,14 @@ st.markdown("<h1 style='color:red;'>🍿 Netflix Recommendation Engine</h1>", un
 st.markdown("""
     <style>
     .tile-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        justify-items: center;
     }
     .movie-tile {
         position: relative;
-        width: 22%;
-        margin: 10px;
+        width: 100%;
         border-radius: 10px;
         overflow: hidden;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
